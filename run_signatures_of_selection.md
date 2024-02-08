@@ -15,7 +15,7 @@ General parameters that are applicable for all the analyses implemented in the s
 <p><code>min_sample_size</code>: min number of samples in the population<br>
 <code>skip_pop</code>: the path to the text file containing population IDs that will be skipped<br>
 <code>skip_sel_outgroup</code>: an option to skip the outgroup <br>
-<code> selection_plot_yml</code>: the path to the yml file containing parameters for manhattan plot <br>
+<code>selection_plot_yml</code>: the path to the yml file containing parameters for manhattan plot <br>
 <code>perc_threshold</code>: threshold to select actual candidate regions</p>
 
 Parameters for analyzes with the VCFtools: \
