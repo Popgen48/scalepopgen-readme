@@ -153,7 +153,7 @@ As we would like to create a YAML file that we do not have yet, click enter on "
 ![CLI1](https://github.com/NPogo/scalepopgen_README/assets/131758840/f2ca31c1-4364-4677-a9ae-16d49a6ef3b4)
 
 At the beginning, we have to specify some of the general parameters, which can be found in the first tab of CLI: \
-![CLI2](https://github.com/NPogo/scalepopgen_README/assets/131758840/f365a667-f1da-412b-bcea-1685bacc58b7)!>[CLI3](https://github.com/NPogo/scalepopgen_README/assets/131758840/3d4b11dc-1cac-473c-a418-30cc8f159370)
+![CLI2](https://github.com/NPogo/scalepopgen_README/assets/131758840/f365a667-f1da-412b-bcea-1685bacc58b7)! > [CLI3](https://github.com/NPogo/scalepopgen_README/assets/131758840/3d4b11dc-1cac-473c-a418-30cc8f159370)
 
 #### Setting the general parameters:
 ```input```: path to the ".csv" input sheet for the VCF files or ".p.csv" for the PLINK binary files \
