@@ -11,8 +11,8 @@ This sub-workflow is used for analyses with [Admixture](https://dalexander.githu
 ```smartpca```: an option to run SmartPCA \
 ```smartpca_param```: the path to the file with additional parameters for SmartPCA\
 ```pca_plot_yml```: the path to the yml file containing the parameters to plot interactive PCA results\
-```marker_map```: the path to the text file with specified marker shapes for each population \
-```chrom_map```: the path to the text file with specified new chromosome IDs \
+```marker_map```: the path to the text file with specified marker shapes for each population (extension ".map") \
+```chrom_map```: the path to the text file with specified new chromosome IDs (extension ".map") \
 ```admixture```: an option to run Admixture \
 ```start_k```: starting number of clusters for Admixture analysis \
 ```end_k```: maximal number of clusters for Admixture analysis \
@@ -27,23 +27,7 @@ This sub-workflow is used for analyses with [Admixture](https://dalexander.githu
 
 ## Overview of the processed carried out in this sub-workflow: 
 
-**1.** converting vcf to bed file format using Plink \
-**2.** merging converted bed files (separated by chromosomes) with Plink \
-**3.** removing listed individuals \
-**4.** applying LD-based filtering of bed files with Plink \
-**5.** updating chromosome names from strings to integer numbers \
-**6.** running PCA with SmartPCA \
-**7.** plotting the results of SmartPCA \
-**8.** running PCA with snpgdsPCA \
-**9.** plotting the results of snpgdsPCA \
-**10.** calculating pairwise Fst and plot NJ-based tree\
-**11.** calculating IBS distances and plot NJ-based tree \
-**12.** running admixture from the starting and ending k-value selected by the user  \
-**13.** selecting the optimal number of clusters (K) regarding the lowest cross validation error  \
-**14.**  plotting the admixture results and generating Pong input 
-
-> **Note:** If your input files are already in Plink format, it will skip the steps 1 and 2. Also, if the LD-based filtering is set to true, all the analyses will be carried out using LD-based pruned dataset. 
-
+![genetic_structure drawio](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/65c3e9ab-2cb2-4ca6-bd67-54eec0c38db7)
 
 ## Validation and test-run of the sub-workflow:
 For workflow validation, we have downloaded publicly available samples (see map below) with whole genome sequences from NCBI database (Alberto et al., 2018; Grossen et al., 2020; Henkel et al., 2019). We included domestic goats (*Capra hircus*) represented by various breeds from Switzerland. In addition to them, we also included Alpine ibex (*C. ibex*) and Bezoar wild goat (*C. aegagrus*). Since we need an outgroup when performing some of the analyses, we also added Urial sheep (*Ovis vignei*). We will use variants from chromosome 28 and 29 of, all together, 85 animals.
@@ -143,31 +127,34 @@ Start the CLI with:
 python scalepopgen_cli.py
 ```
 As we would like to create a YAML file that we do not have yet, click enter on "No".
+
 ![CLI1](https://github.com/NPogo/scalepopgen_README/assets/131758840/f2ca31c1-4364-4677-a9ae-16d49a6ef3b4)
 
-At the beginning, we have to specify some of the general parameters, which can be found in the first tab of CLI: \
+At the beginning, we have to specify some of the general parameters, which can be found in the first tab of CLI:
+
 ![CLI2](https://github.com/NPogo/scalepopgen_README/assets/131758840/f365a667-f1da-412b-bcea-1685bacc58b7)![CLI3](https://github.com/NPogo/scalepopgen_README/assets/131758840/3d4b11dc-1cac-473c-a418-30cc8f159370)
 
 #### Setting the general parameters:
 ```input```: path to the ".csv" input sheet for the VCF files or ".p.csv" for the PLINK binary files \
 ```outDir```: the name of the output folder \
-```sample_map```: path to the file with listed individuals and populations as addition to VCF inputs \
-```color_map```: path to the file with specified colors for each population \
+```sample_map```: path to the file with listed individuals and populations as addition to VCF inputs (extension ".map") \
+```color_map```: path to the file with specified colors for each population (extension ".map") \
 ```outprefix```: the prefix of the output files \
 ```max_chrom```: maximum number of chromosomes \
 ```allow_extra_chrom```: set to true if the input contains chromosome ID in the form of string \
-```chrom_length_map```: path to the file with listed lengths (base pairs) for each chromosome \
+```chrom_length_map```: path to the file with listed lengths (base pairs) for each chromosome (extension ".map") \
 ```fasta```: path to the reference genome fasta file that will be used for converting in case of PLINK inputs \
 ```outgroup```: the population ID of the outgroup \
 ```window_size```: window size relevant for summary statistics, Tajima's D, Pi, Fst and SweepFinder2  \
 ```step_size```: step size relevant for Tajima's D, Pi and Fst \
 
 After completion of general parameters, we can move to the tabs dedicated to explore genetic structure. Here we specify options described at the beginning of this documentation. At the end, save the parameters as YAML file:
+
 ![CLI4](https://github.com/NPogo/scalepopgen_README/assets/131758840/9bedd791-cef2-431c-b83c-b1d679a2078d)![CLI5](https://github.com/NPogo/scalepopgen_README/assets/131758840/6b765086-df4d-4ad0-8f72-c28c9611c98f)
 
 With created YAML file of parameters, we are ready to start the workflow. Choose any container profile, we prefer mamba, and set the maximum number of processes, 10 in our case, that can be executed in parallel by each executor. From within the **scalepopgen** folder, execute the following command:
 ```
-nextflow run scalepopgen  -params-file parameters.yml -profile mamba -qs 10
+nextflow run scalepopgen  -params-file Gen_structure.yml -profile mamba -qs 10
 ```
 You can check all the other command running options with the option help :
 ```
@@ -176,67 +163,45 @@ nextflow run scalepopgen -help
 If the module analyses are processed successfully, the command line output is looking like this:
 ```
 N E X T F L O W  ~  version 23.04.1
-Launching `scalepopgen.nf` [big_swirles] DSL2 - revision: 9f9aaad1d2
-executor >  slurm (10)
-[26/3c186e] process > GENERATE_POP_COLOR_MAP (generating pop color map)                                          [100%] 1 of 1 ✔
-[33/cca7ac] process > PLOT_GEO_MAP (plotting_sample_on_map)                                                      [100%] 1 of 1 ✔
-[27/5137ac] process > CONVERT_FILTERED_VCF_TO_PLINK:CONVERT_VCF_TO_BED (converting_vcf_to_bed_CHR29)             [100%] 2 of 2 ✔
-[0c/af2851] process > CONVERT_FILTERED_VCF_TO_PLINK:MERGE_BED (merging_bed_goats)                                [100%] 1 of 1 ✔
-[d8/740abc] process > EXPLORE_GENETIC_STRUCTURE:REMOVE_INDI_STRUCTURE (remove_indi_pca_goats)                    [100%] 1 of 1 ✔
-[2d/1ba3a8] process > EXPLORE_GENETIC_STRUCTURE:LD_FILTER_STRUCTURE (ld_filtering_goats_rem_indi)                [100%] 1 of 1 ✔
-[56/e7e488] process > EXPLORE_GENETIC_STRUCTURE:UPDATE_CHROM_IDS (updating_chrom_ids)                            [100%] 1 of 1 ✔
-[7d/fceb05] process > EXPLORE_GENETIC_STRUCTURE:RUN_SMARTPCA (running_smartpca_goats_rem_indi_ld_filtered_upd... [100%] 1 of 1 ✔
-[66/231574] process > EXPLORE_GENETIC_STRUCTURE:PLOT_SMARTPCA (plot_interactive_pca)                             [100%] 1 of 1 ✔
-[7b/2561e0] process > EXPLORE_GENETIC_STRUCTURE:RUN_SNPGDSPCA (running_snpgdspca_goats_rem_indi_ld_filtered_u... [100%] 1 of 1 ✔
-[6e/5c3380] process > EXPLORE_GENETIC_STRUCTURE:PLOT_SNPGDSPCA (plot_interactive_pca)                            [100%] 1 of 1 ✔
-[75/0f8471] process > EXPLORE_GENETIC_STRUCTURE:CALC_PAIRWISE_FST (ld_filtering_goats_rem_indi_ld_filtered)      [100%] 1 of 1 ✔
-[cd/67a405] process > EXPLORE_GENETIC_STRUCTURE:CALC_1_MIN_IBS_DIST (1_min_ibs_distance_goats_rem_indi_ld_fil... [100%] 1 of 1 ✔
-[01/dfc42f] process > EXPLORE_GENETIC_STRUCTURE:RUN_ADMIXTURE_DEFAULT (run_admixture_5)                          [100%] 9 of 9 ✔
-[7a/ae5112] process > EXPLORE_GENETIC_STRUCTURE:EST_BESTK_PLOT (estimating_bestK)                                [100%] 1 of 1 ✔
-[44/e127c9] process > EXPLORE_GENETIC_STRUCTURE:GENERATE_PONG_INPUT (generating_pong_input)                      [100%] 1 of 1 ✔
-Completed at: 09-Aug-2023 13:56:31
-Duration    : 5m 52s
-CPU hours   : 2.8
-Succeeded   : 25
+...
+[f0/85291b] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:GAWK_GENERATE_COLORS (generating colors for plotting)     [100%] 1 of 1 ✔
+[94/37a987] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:PLINK2_VCF (CHR28)                                        [100%] 2 of 2 ✔
+[ef/9f70e4] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:PLINK2_MERGE_BED (merging_bed)                            [100%] 1 of 1 ✔
+[e8/cbe397] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:PLINK2_REMOVE_CUSTOM_INDI (remove_indi_pca_TRIAL_rem_i... [100%] 1 of 1 ✔
+[91/3447c7] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:PLINK2_INDEP_PAIRWISE (ld_filtering_TRIAL_rem_indi)       [100%] 1 of 1 ✔
+[ea/92afc6] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:GAWK_UPDATE_CHROM_IDS (updating_chrom_ids)                [100%] 1 of 1 ✔
+[ab/045070] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:PLINK_MAKE_BED (TRIAL_rem_indi_ld_filtered)               [100%] 1 of 1 ✔
+[89/5fdcc8] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:RUN_PCA:PLINK2_EXPORT_PED (merging_bed)                   [100%] 1 of 1 ✔
+[a7/03be2a] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:RUN_PCA:PYTHON_CREATE_EIGENSTRAT_PAR (create smartpca ... [100%] 1 of 1 ✔
+[43/742896] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:RUN_PCA:GAWK_MODIFY_PHENO_COL_PED (preparing_new_map)     [100%] 1 of 1 ✔
+[1b/f16b34] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:RUN_PCA:EIGENSOFT_CONVERTF (TRIAL_rem_indi_ld_filtered... [100%] 1 of 1 ✔
+[ac/b1bd83] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:RUN_PCA:PYTHON_CREATE_SMARTPCA_PAR (create smartpca par)  [100%] 1 of 1 ✔
+[95/ef31ea] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:RUN_PCA:EIGENSOFT_SMARTPCA (TRIAL_rem_indi_ld_filtered... [100%] 1 of 1 ✔
+[eb/3b8ebc] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:RUN_PCA:PYTHON_PLOT_PCA (plot_interactive_pca)            [100%] 1 of 1 ✔
+[92/713c8f] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:CALC_FST:GAWK_MAKE_CLUSTER_FILE (making_cluster_file)     [100%] 1 of 1 ✔
+[85/6bd339] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:CALC_FST:PLINK2_CALC_PAIRWISE_FST (pairwise_fst_null)     [100%] 1 of 1 ✔
+[18/a9ebe6] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:CALC_FST:PYTHON_PLOT_PAIRWISE_FST (plot_pairwise_fst_n... [100%] 1 of 1 ✔
+[93/0dbf80] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:CALC_1_MIN_IBS_DIST:PLINK_CALC_1_MIN_IBS_DIST (1_min_i... [100%] 1 of 1 ✔
+[a7/2f845d] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:CALC_1_MIN_IBS_DIST:PYTHON_PLOT_1_MIN_IBS_DIST (plot_1... [100%] 1 of 1 ✔
+[e2/cb686d] process > POPGEN48_SCALEPOPGEN:SCALEPOPGEN:MULTIQC_GENETIC_STRUCTURE (1)                             [100%] 1 of 1 ✔
+-[popgen48/scalepopgen] Pipeline completed successfully-
+Completed at: 12-Feb-2024 17:01:57
+Duration    : 1m 21s
+CPU hours   : (a few seconds)
+Succeeded   : 21
 ```
 
 ### 4. Description of the output files generated by this sub-workflow:
-The results are stored in the folder **./genetic_structure** and inside we have subfolders of each PCA, Admixture and interactive plots. In subfolder **/plink** are stored files after modifying and filtering steps.
+The results are stored in the different folders according to PCA, Admixture and interactive plots:
 
-![folders](../../images/genstruct_dir.PNG)
+![image](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/701c9947-d595-41b8-a440-55a97a188c8c)
 
-Each PCA has its own folder with eigenvectors and eigenvalues:
-![folders](../../images/gds_PCA_dir.PNG)
+> **Note:** The output also contains a folder **./pipeline_info**, where are execution reports and used parameters.
 
-![folders](../../images/smartPCA_dir.PNG)
+In the directory named **./multiqc** is a link to all the plots produced by this sub-workflow. Just by opening it in any browser, we can quickly check ther results and gain insight into the genetic structure of the samples. As an example, let's take a look at the PCA results. Our samples cluster into three groups. In the first one we can found all breeds of domestic goats from Switzerland. In another cluster are Alpine ibexes and in the third one are Bezoar wild goats.
 
-Folder admixture contains Q-matrices for each K value together with interactive plot of optimal K:
-
-![folders](../../images/admixture_dir.PNG)
-
-Interactive plots of  PCA and both NJ trees are stored here:
-
-![folders](../../images/genstruct_plots_dir.PNG)
-
-
-Let's take a look at the PCA plots first. On both of them our samples cluster into three groups. In the first one we can found all breeds of domestic goats from Switzerland. In another cluster are Alpine ibexes and in the third one are Bezoar wild goats.
-
-![image description](../../images/test_pca_plot.svg)
-
-Figure 1: Interactive plots of both Principal Component Analyses
-
-Program Admixture estimated the optimal number of clusters at five. As we can see on Figure 2, four Swiss goats (Booted, Chamois colored, Peacock and Saanen) are showing very similar genomic structures. Appenzell and Toggenburg goat breeds have distinct and more homogeneous structures with some individual goats that share segments with other breeds from Switzerland. Both wild species, Alpine ibex and Bezoar, have uniform genetic structures.
-
-![plot](../../images/admixture_plot.svg)
-Figure 2: Population structures of our dataset
-
-The NJ tree of IBS-based (Figure 3) distances positioned the branches of Swiss goats according to their breeds. Alpine ibexes and Bezoar wild goats formed their own clade, inside of which we can see clear distinction between the two species. According to that distribution was also the layout of Fst-based NJ tree (Figure 4), but, unlike the IBS-based tree, here we have population'  divergence.
-
-![image description](../../images/ibs_tree.svg)
-Figure 3: A neighbor-joining tree constructed with matrix of IBS distances between individuals
-
-![image description](../../images/fst_tree.svg)
-Figure 4: A neighbor-joining tree constructed with Fst distances between populations
+![PCA](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/30d6d0d7-812b-4fb3-add0-dd3cc98a92b2)
+Principal Component Analysis
 
 
 ### 5. Generating the interactive plots without running the workflow
@@ -330,13 +295,13 @@ Please cite the following papers if you use this sub-workflow in your study:
 
 [3] Price, A. L., Patterson, N. J., Plenge, R. M., Weinblatt, M. E., Shadick, N. A., & Reich, D. (2006). Principal components analysis corrects for stratification in genome-wide association studies. Nature genetics, 38(8), 904-909. https://doi.org/10.1038/ng1847
 
-[4] Zheng, X., Levine, D., Shen, J., Gogarten, S. M., Laurie, C., & Weir, B. S. (2012). A high-performance computing toolset for relatedness and principal component analysis of SNP data. Bioinformatics (Oxford, England), 28(24), 3326-3328. https://doi.org/10.1093/bioinformatics/bts606
+[4] Francis, R. M. (2017). pophelper: an R package and web app to analyse and visualize population structure. Mol Ecol Resour, 17: 27–32. doi:10.1111/1755-0998.12509
 
-[5] Francis, R. M. (2017). pophelper: an R package and web app to analyse and visualize population structure. Mol Ecol Resour, 17: 27–32. doi:10.1111/1755-0998.12509
+[5] Huerta-Cepas, J. et al.,(2016). ETE 3: Reconstruction, Analysis, and Visualization of Phylogenomic Data, Molecular Biology and Evolution, Volume 33, Issue 6, June 2016, Pages 1635–1638, https://doi.org/10.1093/molbev/msw046.
 
-[6] Huerta-Cepas, J. et al.,(2016). ETE 3: Reconstruction, Analysis, and Visualization of Phylogenomic Data, Molecular Biology and Evolution, Volume 33, Issue 6, June 2016, Pages 1635–1638, https://doi.org/10.1093/molbev/msw046.
+[6] Eaton, Deren. (2019). Toytree: A minimalist tree visualization and manipulation library for Python. Methods in Ecology and Evolution. 11. 10.1111/2041-210X.13313. 
 
-[7] Eaton, Deren. (2019). Toytree: A minimalist tree visualization and manipulation library for Python. Methods in Ecology and Evolution. 11. 10.1111/2041-210X.13313. 
+[7] Ewels, P., Magnusson, M., Lundin, S., & Käller, M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics (Oxford, England), 32(19), 3047–3048. https://doi.org/10.1093/bioinformatics/btw354
 
 [8] Di Tommaso, P., Chatzou, M., Floden, E. et al. Nextflow enables reproducible computational workflows. Nat Biotechnol 35, 316-319 (2017). https://doi.org/10.1038/nbt.3820
 
