@@ -198,11 +198,10 @@ The results are stored in the different folders according to PCA, Admixture and 
 
 > **Note:** The output also contains a folder **./pipeline_info**, where are execution reports and used parameters.
 
-In the directory named **./multiqc** is a link to all the plots produced by this sub-workflow. Just by opening it in any browser, we can quickly check ther results and gain insight into the genetic structure of the samples. As an example, let's take a look at the PCA results. Our samples cluster into three groups. In the first one we can found all breeds of domestic goats from Switzerland. In another cluster are Alpine ibexes and in the third one are Bezoar wild goats.
+In the directory named **./multiqc** is a link to all the plots produced by this sub-workflow. Just by opening it in any browser, we can quickly check the results and gain insight into the genetic structure of the samples. As an example, let's take a look at the PCA results. Our samples cluster into three groups. In the first one we can found all breeds of domestic goats from Switzerland. In another cluster are Alpine ibexes and in the third one are Bezoar wild goats.
 
 ![PCA](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/30d6d0d7-812b-4fb3-add0-dd3cc98a92b2)
 Principal Component Analysis
-
 
 ### 5. Generating the interactive plots without running the workflow
 For generating the interactive PCA plot only (without re-running the workflow), one can use the following command: 
