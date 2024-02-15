@@ -108,20 +108,15 @@ NC_030836.1	51331237
 NC_030836.1	51331522
 ```
 
-There is also an option to draw a geographic map with sample origin. For that we need to provide two files. In the first one we write down population ID in the first column and comma separated latitude and longitude in the second column:
-```Bezoar	32.662864436650814,51.64853259116807
-Urial	34.66031157,53.49391737
-AlpineIbex	46.48952713,9.832698605
-ChamoisColored	46.620927266181674,7.345747305114329
-Appenzell	47.33229709563813,9.401363933224248
-Booted	47.426361052956736,9.384330852599533
-Peacock	46.321661051197026,8.804738507288173
-Toggenburg	47.358160245764715,9.01070577172017
-Grigia	46.24935612558498,8.700996940189137
-Saanen	46.9570926960748,8.205509946726016
+If the chromosome IDs in your input files are in the form of string, you can provide a file (```chrom_id_map```) with old IDs in the first column and new IDs as number in a second column:
 ```
-In the second file, we specify the hex codes of colors (2. column) that will represent each population (1. column):
-```AlpineIbex	#008000
+NC_030835.1 28
+NC_030836.1 29
+```
+
+There is also an option (```color_map```) to specify the hex codes of colors (2. column) that will represent each population (1. column):
+```
+AlpineIbex	#008000
 Appenzell	#ff5733
 Booted	#0000FF
 ChamoisColored	#d6b919
@@ -132,9 +127,8 @@ Urial	#A52A2A
 Toggenburg	#da4eed
 Bezoar	#FFA500
 ```
-The last file is not obligatory as the tool can choose random colors, while the first one with coordinates is necessary for the map plotting.
 
-Please, pay attention that files for options ```rem_indi```, ```remove_snps``` and ```color_map``` have the extension ".map".
+Please, pay attention that files for options ```rem_indi```, ```remove_snps```,  ```chrom_id_map``` and ```color_map``` have the extension ".map".
 
 ### 3. Setting the parameters
 To assist the user in creating the parameter file, there is a Command-Line Interface (CLI). Please, refer to the general README for CLI installation. 
