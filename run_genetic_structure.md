@@ -118,8 +118,6 @@ Bezoar	triangle_default
 
 In the case of PCA, you can also provide your own file with optional parameters (```smartpca_param```). To make one, please use the [instructions of the EIGENSOFT software](https://github.com/chrchang/eigensoft/tree/master/POPGEN).
 
-This workflow also has an option to draw a geographic map with samples' origin. Please, check the README of the filtering sub-workflow, where we described the layout of the input files.
-
 ### 3. Setting the parameters
 To assist the user in creating the parameter file, there is a Command-Line Interface (CLI). Please, refer to the general README for CLI installation. 
 Start the CLI with:
