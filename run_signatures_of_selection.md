@@ -123,8 +123,11 @@ SRR12396950urial	Urial
 ```
 ### 2. Optional input files
 
-This workflow has an option to draw a geographic map with samples' origin. Please, check the README of the filtering sub-workflow, where we described the layout of the input files.
-
+If the chromosome IDs in your input files are in the form of string, it is necessary to provide a file (```chrom_id_map```) with old IDs in the first column and new IDs as number in a second column:
+```
+NC_030835.1 28
+NC_030836.1 29
+```
 
 ### 3. Setting the parameters
 To assist the user in creating the parameter file, there is a Command-Line Interface (CLI). Please, refer to the general README for CLI installation. 
