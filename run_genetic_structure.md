@@ -7,7 +7,7 @@ This sub-workflow is used for analyses with [Admixture](https://dalexander.githu
 ```ld_filt```: an option to use LD-based filtering according to parameters specified below \
 ```ld_window_size```: a window size in variant count or kilo bases \
 ```ld_step_size```: number of variants to shift the window at the end of each step\
-```r2_value```: squared correlation threshold; at each step, only pairs of variants with r2 greater than the threshold are recognized \
+```r2_threshold```: squared correlation threshold; at each step, only pairs of variants with r2 greater than the threshold are recognized \
 ```smartpca```: an option to run SmartPCA \
 ```smartpca_param```: the path to the file with additional parameters for SmartPCA\
 ```pca_plot_yml```: the path to the yml file containing the parameters to plot interactive PCA results\
@@ -32,7 +32,7 @@ This sub-workflow is used for analyses with [Admixture](https://dalexander.githu
 ## Validation and test-run of the sub-workflow:
 For workflow validation, we have downloaded publicly available samples (see map below) with whole genome sequences from NCBI database (Alberto et al., 2018; Grossen et al., 2020; Henkel et al., 2019). We included domestic goats (*Capra hircus*) represented by various breeds from Switzerland. In addition to them, we also included Alpine ibex (*C. ibex*) and Bezoar wild goat (*C. aegagrus*). Since we need an outgroup when performing some of the analyses, we also added Urial sheep (*Ovis vignei*). We will use variants from chromosome 28 and 29 of, all together, 85 animals.
 
-![Sample_info](https://github.com/NPogo/scalepopgen_README/assets/131758840/71b74d80-18d1-4dfa-a523-07b06ba86889)
+![Sample_info](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/1a50f0ef-6673-41a2-877b-f7f9e9031dc1)
 Geographic map of the samples used for the test-run
 
 ###### Alberto et al. (2018). Convergent genomic signatures of domestication in sheep and goats. *Nature communications*, https://doi.org/10.1038/s41467-018-03206-y
@@ -45,8 +45,8 @@ The input data should be in the **VCF** or **PLINK binary** format files.
 All VCF files need to be splitted by the chromosomes and indexed with tabix. We have listed the input files in the CSV sheet (the example below) with the necessary header row. The first information in each row of the input sheet is chromosome id, next is path to the zipped VCF file and the last is path to the indexed VCF file. In our case, we inserted the links to the cloud stored data. Please note that the chromosome ID must not contain any punctuation marks.
 ```
 chrom,vcf,vcf_idx
-chr28,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz.tbi
-chr29,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz.tbi
+NC_030835.1,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz.tbi
+NC_030836.1,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz.tbi
 ```
 In addition to the VCF input sheet, it is also necessary to prepare a sample map file of individuals and populations. Sample map has two tab-delimited columns: in the first column are individual IDs and in the second are population IDs as demonstrated on the example below. It is also important that the name of the file ends with ".map" and unlike input sheet, there is no header.
 ```
@@ -126,11 +126,12 @@ python scalepopgen_cli.py
 ```
 As we would like to create a YAML file that we do not have yet, click enter on "No".
 
-![CLI1](https://github.com/NPogo/scalepopgen_README/assets/131758840/f2ca31c1-4364-4677-a9ae-16d49a6ef3b4)
+![CLI1](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/8e1dbf6f-d6a8-4f74-99d4-f98e96a39640)
 
 At the beginning, we have to specify some of the general parameters, which can be found in the first tab of CLI:
 
-![CLI2](https://github.com/NPogo/scalepopgen_README/assets/131758840/f365a667-f1da-412b-bcea-1685bacc58b7)![CLI3](https://github.com/NPogo/scalepopgen_README/assets/131758840/3d4b11dc-1cac-473c-a418-30cc8f159370)
+![CLI2](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/41c162a6-25e1-4db3-b951-32e10c1fda1b)
+![CLI3](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/60110de7-19af-4d33-9cd3-f6202180c0c9)
 
 #### Setting the general parameters:
 ```input```: path to the ".csv" input sheet for the VCF files or ".p.csv" for the PLINK binary files \
@@ -141,14 +142,18 @@ At the beginning, we have to specify some of the general parameters, which can b
 ```max_chrom```: maximum number of chromosomes \
 ```allow_extra_chrom```: set to true if the input contains chromosome ID in the form of string \
 ```chrom_length_map```: path to the file with listed lengths (base pairs) for each chromosome (extension ".map") \
+```chrom_id_map```: path to the file with listed chromosome IDs in the form of string (first column) and number (second column) (extension ".map") \
 ```fasta```: path to the reference genome fasta file that will be used for converting in case of PLINK inputs \
 ```outgroup```: the population ID of the outgroup \
 ```window_size```: window size relevant for summary statistics, Tajima's D, Pi, Fst and SweepFinder2  \
 ```step_size```: step size relevant for Tajima's D, Pi and Fst \
+```indiv_summary```: if set to true it will calculate sample-based summary statistics, after individual- and site-based filtering
 
-After completion of general parameters, we can move to the tabs dedicated to explore genetic structure. Here we specify options described at the beginning of this documentation. At the end, save the parameters as YAML file:
+After completion of general parameters, we can move to the tab dedicated to explore genetic structure. Here we specify options described at the beginning of this documentation. At the end, save the parameters as YAML file:
 
-![CLI4](https://github.com/NPogo/scalepopgen_README/assets/131758840/9bedd791-cef2-431c-b83c-b1d679a2078d)![CLI5](https://github.com/NPogo/scalepopgen_README/assets/131758840/6b765086-df4d-4ad0-8f72-c28c9611c98f)
+![CLI4](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/4bc056b6-e1d0-458e-bf11-5f6b6d57a79e)
+![CLI5](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/c817da5f-d23d-4617-af16-e5400980a56a)
+
 
 With created YAML file of parameters, we are ready to start the workflow. Choose any container profile, we prefer mamba, and set the maximum number of processes, 10 in our case, that can be executed in parallel by each executor. From within the **scalepopgen** folder, execute the following command:
 ```
@@ -190,13 +195,19 @@ Succeeded   : 21
 ```
 
 ### 4. Description of the output files generated by this sub-workflow:
-The results are stored in the different folders according to PCA, Admixture and interactive plots:
+The results are stored in the different folders: 
 
-![image](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/701c9947-d595-41b8-a440-55a97a188c8c)
+![image](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/15d0d09c-2cd8-4cc4-802b-f8b78e9bc559)
+
+The workflow produce separace folder according to different analyses:  \
+ -the eigenvalues and eigenvectors of the PCA are stored in the folder **./pca/eigensoft/smartpca/**  \
+ -the q-matrixes of admixture analysis are in the folder **./admixture/ADMIXTURE/**  \
+ -the calculated IBS-1 distances can be found in the folder **./ibs_clustering/plink/calc_1_mins_ibs_dist/**  \
+ -the calculated pairwise FST distances are in the folder **./fst_clustering/plink2/**
 
 > **Note:** The output also contains a folder **./pipeline_info**, where are execution reports and used parameters.
 
-In the directory named **./multiqc** is a link to all the plots produced by this sub-workflow. Just by opening it in any browser, we can quickly check the results and gain insight into the genetic structure of the samples. As an example, let's take a look at the PCA results. Our samples cluster into three groups. In the first one we can found all breeds of domestic goats from Switzerland. In another cluster are Alpine ibexes and in the third one are Bezoar wild goats.
+In the directory named **./multiqc/** is a link to all the plots produced by this sub-workflow. Just by opening it in any browser, we can quickly check the results and gain insight into the genetic structure of the samples. As an example, let's take a look at the PCA results. Our samples cluster into three groups. In the first one we can found all breeds of domestic goats from Switzerland. In another cluster are Alpine ibexes and in the third one are Bezoar wild goats.
 
 ![PCA](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/30d6d0d7-812b-4fb3-add0-dd3cc98a92b2)
 Principal Component Analysis
@@ -206,7 +217,7 @@ For generating the interactive PCA plot only (without re-running the workflow), 
 ```
 python3 plot_interactive_pca.py <eigenvect_file> <eigenval_file> pop_markershape_col.txt pca.yml <output_prefix>
 ```
-The python script is located in the bin folder of scalepopgen. **<eigenvect_file>** and **<eigenval_file>** are located in the respective output folders of smartpca and gds_pca. The yaml file is located in "/parameters/plots/" folder. **pop_markershape_col.txt** is located in the folder of "interactive_plots/pca/" or one can also create this tab-delimited file with this format: the first column is pop_id, the second column is shape_id, the third column is hex color code. Refer to "./extra/markershapes.txt" to see the list of shapes implemented in this bokeh-dependent python script. The parameters of the yaml files are described below:
+The python script (**/bin/plot_interactive_pca.py**) and the yaml (**/extra/plots/pca.yml**) file are located in the scalepopgen's folder. The **<eigenvect_file>** and the **<eigenval_file>** are located in the respective output folder of smartpca (**./pca/eigensoft/smartpca/**). The **pop_markershape_col.txt** is located in the output folder **./pca/python/plot/pca/** or one can also create this tab-delimited file with this format: the first column is pop_id, the second column is shape_id, the third column is hex color code. Refer to "./extra/markershapes.txt" to see the list of shapes implemented in this bokeh-dependent python script. The parameters of the yaml files are described below:
 ```
  plot_width: plot-width size in pixel
  plot_height: plot-height size in pixel
@@ -223,7 +234,7 @@ Next, the admixture plot can be also generated with the following command:
 ```
 python3 plot_interactive_q_mat.py -q <Q_matrix_file> -f <plink_fam_file> -y admixture.yml -c color.txt -o <output_prefix> -s plot_pop_order.txt
 ```
-The python script located in the bin folder of scalepopgen. **<Q_matrix_file>** is located in the respective output folder of admixture. The file <plink_fam_file> is located in folder **./plink/update_chrom_ids/*.fam**. Text files **color.txt** and **plot_pop_order.txt** can be created by the user. File **color.txt** has hex color codes listed in one column:
+The python script located in the bin folder of scalepopgen. The q-matrixes are located in the respective output folder of admixture (**./admixture/ADMIXTURE/**) and should be listed in one column of a text file **<Q_matrix_file>**. The file <plink_fam_file> is located in folder **./plink/make_bed/**. Text files **color.txt** and **plot_pop_order.txt** can be created by the user. File **color.txt** has hex color codes listed in one column:
 ```
 #FF0000
 #00FF00
@@ -247,7 +258,7 @@ Toggenburg
 Bezoar
 AlpineIbex
 ```
-The yaml file **admixture.yml** is located in "/parameters/plots/" and contains parameters described below:
+The yaml file **admixture.yml** is located in scalepopgen folder **/extra/plots/** and contains parameters described below:
 ```
  width: plot-width size in pixel
  height: plot-height size in pixel
@@ -265,7 +276,7 @@ For generating the IBS-dist interactive NJ trees, one can use the following comm
 ```
 python3 make_ibs_dist_nj_tree.py -r <outgroup> -i <square_mat_mdist_file> -m <mdist.id_file> -c pop_sc_color.map -y ibs_nj.yml -o <output_prefix>
 ```
-The python script is located in the bin folder of scalepopgen. **<outgroup>** refers to the population to be used for rooting the tree, **<square_mat_mdist_file>** refers to the square matrix of 1-ibs distance between pairwise samples and generated by plink1.9, **<mdist.id_file>** refers to id file generated along with the square matrix by plink1.9, **pop_sc_color.map* is the tab-delimited file containing the first column as pop_id, second column as sample size and the third column as hex color code. Also generated by the workflow and saved in the output folder as **pop_sc_color.map**. The yml file is located in "parameter/plots/" folder. The parameter of the yml files are described below:
+The python script is located in the bin folder of scalepopgen. The ```<outgroup>``` refers to the population to be used for rooting the tree, **<square_mat_mdist_file>** refers to the square matrix of 1-ibs distance between pairwise samples (**./ibs_clustering/plink/calc_1_mins_ibs_dist/**), **<mdist.id_file>** refers to id file generated along with the square matrix (**./ibs_clustering/plink/calc_1_mins_ibs_dist/**, **pop_sc_color.map* is the tab-delimited file containing the first column as pop_id, second column as sample size and the third column as hex color code. Also generated by the workflow and saved in the output folder as **pop_sc_color.map**. The yml file is located in **/extra/plots/** folder. The parameter of the yml files are described below:
 ```
  width: plot-width size in pixel
  height: plot-height size in pixel
@@ -282,6 +293,18 @@ For generating the Fst-based NJ tree, one can use the following command:
 ```
 python3 make_fst_dist_nj_tree.py -i <fst_summary_file_generated_by_plink2> -r <outgroup> -o <output_prefix> -y fst_nj.yml -c pop_sc_color.map
 ``` 
+The python script is located in the bin folder of scalepopgen. The yml file is located in **/extra/plots/** folder. The parameter of the yml files are described below:
+```
+ width: plot-width size in pixel
+ height: plot-height size in pixel
+ layout: the tree layout, valid options: 'c','r','d', for circular, right and down layout of the tree
+ tip_label_align: whether or not to align the tip labels; input should be boolean; True or False
+ tip_label_font_size: the font size of the tip labels, default: "12px"
+ node_sizes: the size of nodes, default:6
+ node_hover: whether or not to show details info of the node while hovering; input should be boolean; True or False
+```
+
+The ```<outgroup>``` refers to the population to be used for rooting the tree, **<fst_summary_file_generated_by_plink2>** refers to the table with calculated FST distances between populations located in **./fst_clustering/plink2/**, **pop_sc_color.map* is the tab-delimited file containing the first column as pop_id, second column as sample size and the third column as hex color code. Also generated by the workflow and saved in the output folder as **pop_sc_color.map**.
 
 ## References
 Please cite the following papers if you use this sub-workflow in your study:
