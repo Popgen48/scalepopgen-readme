@@ -22,19 +22,18 @@ Options for site filtering:
 ```rem_indi```:  the name of text file containing individuals to be removed (extension ".map")
 
 #### If the argument ```apply_snp_filters``` is set to TRUE, further options can be specified:
-```remove_snps```: the name of text file containing names of SNPs that will be removed (extension ".map") \
+```rem_snps```: the name of text file containing names of SNPs that will be removed (extension ".map") \
 ```maf```: SNPs with minor allele frequencies less than the threshold specified here will be removed \
 ```min_meanDP```: SNPs with average depth (across the samples) less than the threshold specified here will be removed (only for the VCF inputs) \
 ```max_meanDP```: SNPs with average depth (across the samples) greater than the threshold specified here will be removed (only for the VCF inputs) \
 ```hwe```: SNPs with HWE p-values of less than the threshold specified here will be removed \
 ```max_missing```: SNPs, for which the proportion of missing genotypes exceeded this threshold, will be removed \
 ```minQ```: SNPs with base quality less than specified here will be removed (only for the VCF inputs) \
-```indiv_summary```: if set to true it will calculate sample-based summary statistics, after individual- and site-based filtering
 
 ## Validation and test-run of the sub-workflow:
 For workflow validation, we have downloaded publicly available samples (see map below) with whole genome sequences from NCBI database (Alberto et al., 2018; Grossen et al., 2020; Henkel et al., 2019). We included domestic goats (*Capra hircus*) represented by various breeds from Switzerland. In addition to them, we also included Alpine ibex (*C. ibex*) and Bezoar wild goat (*C. aegagrus*). Since we need an outgroup when performing some of the analyses, we also added Urial sheep (*Ovis vignei*). We will use variants from chromosome 28 and 29 of, all together, 85 animals.
 
-![Sample_info](https://github.com/NPogo/scalepopgen_README/assets/131758840/70fca73a-be60-4ebb-bb14-224e8efa2683)
+![Sample_info](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/2ef70f3f-7e82-412b-b4a4-f60ecc46db0b)
 Geographic map of the samples used for the test-run
 
 ###### Alberto et al. (2018). Convergent genomic signatures of domestication in sheep and goats. *Nature communications*, https://doi.org/10.1038/s41467-018-03206-y
@@ -47,8 +46,8 @@ The input data should be in the **VCF** or **PLINK binary** format files.
 All VCF files need to be splitted by the chromosomes and indexed with tabix. We have listed the input files in the CSV sheet (the example below) with the necessary header row. The first information in each row of the input sheet is chromosome id, next is path to the zipped VCF file and the last is path to the indexed VCF file. In our case, we inserted the links to the cloud stored data. Please note that the chromosome ID must not contain any punctuation marks.
 ```
 chrom,vcf,vcf_idx
-chr28,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz.tbi
-chr29,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz.tbi
+NC_030835.1,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/28_filt_samples.vcf.gz.tbi
+NC_030836.1,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz,https://data.cyverse.org/dav-anon/iplant/home/maulik88/29_filt_samples.vcf.gz.tbi
 ```
 In addition to the VCF input sheet, it is also necessary to prepare a sample map file of individuals and populations. Sample map has two tab-delimited columns: in the first column are individual IDs and in the second are population IDs as demonstrated on the example below. It is also important that the name of the file ends with ".map" and unlike input sheet, there is no header.
 ```
@@ -128,7 +127,7 @@ Toggenburg	#da4eed
 Bezoar	#FFA500
 ```
 
-Please, pay attention that files for options ```rem_indi```, ```remove_snps```,  ```chrom_id_map``` and ```color_map``` have the extension ".map".
+Please, pay attention that files for options ```rem_indi```, ```remove_snps```, ```chrom_length_map```, ```chrom_id_map``` and ```color_map``` have the extension ".map".
 
 ### 3. Setting the parameters
 To assist the user in creating the parameter file, there is a Command-Line Interface (CLI). Please, refer to the general README for CLI installation. 
@@ -137,28 +136,33 @@ Start the CLI with:
 python scalepopgen_cli.py
 ```
 As we would like to create a YAML file that we do not have yet, click enter on "No".
-![CLI1](https://github.com/NPogo/scalepopgen_README/assets/131758840/f2ca31c1-4364-4677-a9ae-16d49a6ef3b4)
+![CLI1](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/8b3cd295-798d-4216-a534-a17208480f53)
 
 At the beginning, we have to specify some of the general parameters, which can be found in the first tab of CLI: \
-![CLI2](https://github.com/NPogo/scalepopgen_README/assets/131758840/f365a667-f1da-412b-bcea-1685bacc58b7)![CLI3](https://github.com/NPogo/scalepopgen_README/assets/131758840/3d4b11dc-1cac-473c-a418-30cc8f159370)
+![CLI2](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/faef36eb-03bb-467a-872b-efc7606c281d)
+![CLI3](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/b3595c90-7596-47f5-bc5d-70eaf3aa1497)
 
 #### Setting the general parameters:
 ```input```: path to the ".csv" input sheet for the VCF files or ".p.csv" for the PLINK binary files \
-```outDir```: the name of the output folder \
+```outdir```: the name of the output folder \
 ```sample_map```: path to the file with listed individuals and populations as addition to VCF inputs (extension ".map") \
 ```color_map```: path to the file with specified colors for each population (extension ".map") \
 ```outprefix```: the prefix of the output files \
 ```max_chrom```: maximum number of chromosomes \
 ```allow_extra_chrom```: set to true if the input contains chromosome ID in the form of string \
 ```chrom_length_map```: path to the file with listed lengths (base pairs) for each chromosome (extension ".map") \
+```chrom_id_map```: path to the file with listed chromosome IDs in the form of string (first column) and number (second column) (extension ".map") \
 ```fasta```: path to the reference genome fasta file that will be used for converting in case of PLINK inputs \
 ```outgroup```: the population ID of the outgroup \
 ```window_size```: window size relevant for summary statistics, Tajima's D, Pi, Fst and SweepFinder2  \
 ```step_size```: step size relevant for Tajima's D, Pi and Fst \
+```indiv_summary```: if set to true it will calculate sample-based summary statistics, after individual- and site-based filtering
 
 After completion of general parameters, we can move to the tabs dedicated to removal of sites and samples. Here we specify options described at the beginning of this documentation. At the end, save the parameters as YAML file:
 
-![CLI4](https://github.com/NPogo/scalepopgen_README/assets/131758840/9bedd791-cef2-431c-b83c-b1d679a2078d)![CLI5](https://github.com/NPogo/scalepopgen_README/assets/131758840/6b765086-df4d-4ad0-8f72-c28c9611c98f)
+![CLI4](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/f1dc49b3-82ad-4f71-be47-d755bbed7e34)
+![CLI5](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/4dbe10f3-1bfe-4b43-8faa-5e7e973dc5fd)
+
 
 With created YAML file of parameters, we are ready to start the workflow. Choose any container profile, we prefer mamba, and set the maximum number of processes, 10 in our case, that can be executed in parallel by each executor. From within the **scalepopgen** folder, execute the following command:
 ```
@@ -193,31 +197,10 @@ The scheme of output files differs according to the input formats. In the case o
 
 ![image](https://github.com/Popgen48/scalepopgen-readme/assets/131758840/08f1c5f1-43a3-4799-b707-fe0272deef8b)
 
-The workflow will start with sample-based filtering. After that it will take the sample-filtered files and perform SNP-based filtering. We can find the final filtered files in the folder **./snp_filtering/vcftools/sites_filtes** and their indexed files in **./tabix**. Based on the remaining samples this tool will also prepare the updated sample map (_* *_new_sample_pop.map*_) in the folder **./gawk/prepare_new_map**.
+The workflow will start with sample-based filtering (directory **./sample_filtering/**). After that it will take the sample-filtered files, which are in **./sample_filtering/vcftools/keep/**, and perform SNP-based filtering. We can find the final filtered files in the folder **./snp_filtering/vcftools/sites_filtes/** and their indexed files in **./tabix/**. Based on the remaining samples this tool will also prepare the updated sample map (_* *_new_sample_pop.map*_) in the folder **./gawk/prepare_new_map/**.
 
-> **Note:** The output also contains a folder **./pipeline_info**, where are execution reports and used parameters.
+> **Note:** The output also contains a folder **./pipeline_info/**, where are execution reports and used parameters.
 
-### 5. Generating the geographical map without running the workflow
-For generating the geographic map of samples (without re-running the workflow), one can either use **geo_map_file.txt** generated by the workflow or prepare a tab-delimited file in the similar format. Run the python script with the following command: 
-```
-python3 plot_sample_info.py geo_map_file.txt plot_sample_on_map.yml tiles_info.yml
-```
-The python script is located in the bin folder of scalepopgen. The yaml files are located in the folder "/parameters/plots/". The parameters of the yaml files are described below:
-```
-tile: the name of the tiles to be used for plotting. Default: "world_gray_canvas". Note that the attributes of this tile should be present in tiles_info.yml 
-marker_prop: in case you want to plot the area of the circle proportional to the sample size, specify the value here 
-const_radius : radius of the circle to be plotted 
-zoom_level : zoom level of the map to be plotted 
-overlap_cordi: if the coordinates of the samples are overlappin, the value should be boolean, True or False
-shift_cordi: if the coordinates are overlapping, shift the coordinates by this value. 
-show_label: whether or not the label should be shown in the map, the value should be boolean, True or False 
-label_loc : if the label to be displayed near the circle set to be true, specify the location from the circle 
-label_size: size of the label to be plotted 
-show_legend: whether or not to plot the legend 
-display_sample_size: whether or not to display the sample size along with the pop label in the legend, the value should be boolean 
-display_popup: whether or not to pop-up the information, the value should be boolean 
-output_prefix: prefix of the output html file
-```
 ## References
 Please cite the following papers if you use this sub-workflow in your study:
 
